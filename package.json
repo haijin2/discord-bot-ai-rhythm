@@ -17,4 +17,7 @@
   },
   "homepage": "https://github.com/haijin2/discord-bot-ai-rhythm#readme",
   "description": ""
+  "scripts": {
+  "start": "node index.js"
+}
 }
