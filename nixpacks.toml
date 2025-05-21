@@ -5,4 +5,4 @@ languages = ["python"]
 nixpkgs = ["python311", "gcc"]
 
 [phases.start]
-cmd = "python rhythm.py"
+cmd = "python3 rhythm.py"
