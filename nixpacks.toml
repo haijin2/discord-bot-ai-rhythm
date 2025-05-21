@@ -1,8 +1,8 @@
-[build]
-languages = ["python"]
-
 [phases.setup]
 nixpkgs = ["python311", "gcc"]
 
+[phases.build]
+cmd = "python3 rhythm.py"
+
 [phases.start]
-cmd = "python rhythm.py"
+cmd = "python3 rhythm.py"

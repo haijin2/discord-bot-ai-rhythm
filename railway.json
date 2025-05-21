@@ -7,7 +7,7 @@
     "deploy": {
       "runtime": "V2",
       "numReplicas": 1,
-      "startCommand": "python rhythm.py",
+      "startCommand": "python3 rhythm.py",
       "sleepApplication": false,
       "multiRegionConfig": {
         "asia-southeast1-eqsg3a": {
