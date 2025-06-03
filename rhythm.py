@@ -93,6 +93,7 @@ radio_stations = {
     "pop": "https://www.youtube.com/watch?v=b-bK2Vn3D38",
     "jp": "https://www.youtube.com/watch?v=4FBW3mkdKOs",
     "lofi": "https://www.youtube.com/watch?v=jfKfPfyJRdk",
+    "minecraft": "https://stream-172.zeno.fm/kp41ftw3zehvv?zt=eyJhbGciOiJIUzI1NiJ9.eyJzdHJlYW0iOiJrcDQxZnR3M3plaHZ2IiwiaG9zdCI6InN0cmVhbS0xNzIuemVuby5mbSIsInJ0dGwiOjUsImp0aSI6IjV0d2ZCbGV5UVk2OWhqZm1JVWNBa3ciLCJpYXQiOjE3NDg5NjcyMTcsImV4cCI6MTc0ODk2NzI3N30.JFLYLiuRwtOny_fXb324On6BiobvcN0wro_hHQhs7Yw",
 }
 
 @bot.command()
