@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import asyncio
+import sqlite3
 import yt_dlp
 from dotenv import load_dotenv
 from discord import Embed
@@ -11,7 +11,6 @@ intents.message_content = True
 intents.voice_states = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-
 
 # get token
 load_dotenv()
@@ -86,30 +85,36 @@ async def stop(ctx):
     ctx.voice_client.stop()
     await ctx.send("⏹️ Music stopped.")
 
-
 # radio stations
-radio_stations = {
-    "non-stop-fm": "https://stream-41.zeno.fm/hace1hc4vwzuv",
-    "pop": "https://www.youtube.com/watch?v=b-bK2Vn3D38",
-    "jp": "https://www.youtube.com/watch?v=4FBW3mkdKOs",
-    "lofi": "https://www.youtube.com/watch?v=jfKfPfyJRdk",
-    "minecraft": "https://stream-172.zeno.fm/kp41ftw3zehvv?zt=eyJhbGciOiJIUzI1NiJ9.eyJzdHJlYW0iOiJrcDQxZnR3M3plaHZ2IiwiaG9zdCI6InN0cmVhbS0xNzIuemVuby5mbSIsInJ0dGwiOjUsImp0aSI6IjV0d2ZCbGV5UVk2OWhqZm1JVWNBa3ciLCJpYXQiOjE3NDg5NjcyMTcsImV4cCI6MTc0ODk2NzI3N30.JFLYLiuRwtOny_fXb324On6BiobvcN0wro_hHQhs7Yw",
-}
+# fetch from the db
+def fetch_station_url(station_name):
+    conn = sqlite3.connect('discord-bot-ai-rhythm\stations.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT url FROM stations WHERE name = ?", (station_name,))
+    result = cursor.fetchone()
+    conn.close()
+    return result[0] if result else None
 
 @bot.command()
 async def radio(ctx, station: str = "vibe"):
-
     gif = "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWtxcjl2NHY3NDJkY2ppb3hva2xkMXFxaWppcG1rYmJoYXcwbTBlayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/jEl8zlvatJBVS/giphy.gif"
     station = station.lower()
+
+    # fetch the station url from the db
+    url = fetch_station_url(station)
     
-    if station not in radio_stations:
-        await ctx.send(f"🚫 Unknown station. Available: {', '.join(radio_stations.keys())}")
+    if not url:
+        conn = sqlite3.connect('stations.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM stations")
+        available = [row[0] for row in cursor.fetchall()]
+        conn.close()
+
+        await ctx.send(f"unknown station. Available: {', '.join(available)}")
         return
 
-    url = radio_stations[station]
-
     if not ctx.author.voice:
-        await ctx.send("🚫 You're not in a voice channel.")
+        await ctx.send("wala ka naman sa voice channel")
         return
 
     vc = ctx.voice_client
@@ -134,7 +139,6 @@ async def radio(ctx, station: str = "vibe"):
     else:
         audio_url = url
 
-    # Force FFmpeg to treat it as an audio stream with reconnection flags
     ffmpeg_audio = discord.FFmpegPCMAudio(
         audio_url,
         executable="ffmpeg",
@@ -145,17 +149,24 @@ async def radio(ctx, station: str = "vibe"):
     try:
         vc.play(ffmpeg_audio, after=lambda e: print(f"Finished playing: {e}"))
         embed = Embed(title=f"📻 Now playing: {station} radio", color=0x1DB954)
-        
         embed.set_image(url=gif)
-
         await ctx.send(embed=embed)
 
     except Exception as e:
-        await ctx.send(f"❌ Error playing radio: {e}")
+        await ctx.send(f"Error playing radio: {e}")
 
-@bot.command()
-async def stations(ctx):
-    station_list = '\n'.join(f"• **{name}**" for name in radio_stations.keys())
-    await ctx.send(f"mga stations na pwede kong katahin hehehe: \n{station_list}")
+def fetch_all_station_names():
+    conn = sqlite3.connect('stations.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM stations")
+    results = cursor.fetchall()
+    conn.close()
+    return [row[0] for row in results]
+
+#@bot.command()
+#async def stations(ctx):
+#    stations = fetch_all_station_names()
+#    station_list = '\n'.join(f"• **{name}**" for name in stations)
+#    await ctx.send(f"mga stations na pwede kong katahin hehehe: \n{station_list}")
 
 bot.run(TOKEN)  
