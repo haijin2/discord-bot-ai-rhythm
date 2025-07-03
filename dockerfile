@@ -19,5 +19,8 @@ COPY . .
 # Expose ports if needed (usually not needed for a Discord bot)
 # EXPOSE 8080
 
+# Install FFmpeg for audio processing
+RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+
 # Run your bot
-CMD ["python3", "bot.py"]
+CMD ["python3", "rhythm.py"]

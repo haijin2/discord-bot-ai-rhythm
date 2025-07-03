@@ -63,7 +63,7 @@ async def play(ctx, url):
     
     ctx.voice_client.stop()
     ctx.voice_client.play(
-        discord.FFmpegPCMAudio(url2, executable=r"C:\ffmpeg-7.0.2-essentials_build\bin\ffmpeg.exe"),
+        discord.FFmpegPCMAudio(url2, executable="ffmpeg"),
         after=lambda e: print(f"Finished playing: {e}")
     )
     await ctx.send(f"🎶 Now playing: **{title}**")
@@ -88,7 +88,7 @@ async def stop(ctx):
 # radio stations
 # fetch from the db
 def fetch_station_url(station_name):
-    conn = sqlite3.connect('discord-bot-ai-rhythm\stations.db')
+    conn = sqlite3.connect('stations.db')
     cursor = conn.cursor()
     cursor.execute("SELECT url FROM stations WHERE name = ?", (station_name,))
     result = cursor.fetchone()
